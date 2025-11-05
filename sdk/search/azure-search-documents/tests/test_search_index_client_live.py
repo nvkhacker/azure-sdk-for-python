@@ -42,7 +42,7 @@ class TestSearchIndexClient(AzureRecordedTestCase):
     def _test_get_service_statistics(self, client):
         result = client.get_service_statistics()
         assert isinstance(result, dict)
-        assert set(result.keys()) == {"counters", "limits"}
+        assert set(result.keys()) == {"counters", "indexers_runtime", "limits"}
 
     def _test_list_indexes_empty(self, client):
         result = client.list_indexes()
@@ -146,10 +146,14 @@ class TestSearchIndexClient(AzureRecordedTestCase):
 
         index.e_tag = etag
         with pytest.raises(HttpResponseError):
-            client.create_or_update_index(index, match_condition=MatchConditions.IfNotModified)
+            client.create_or_update_index(
+                index, match_condition=MatchConditions.IfNotModified
+            )
 
     def _test_analyze_text(self, client, index_name):
-        analyze_request = AnalyzeTextOptions(text="One's <two/>", analyzer_name="standard.lucene")
+        analyze_request = AnalyzeTextOptions(
+            text="One's <two/>", analyzer_name="standard.lucene"
+        )
         result = client.analyze_text(index_name, analyze_request)
         assert len(result.tokens) == 2
 
