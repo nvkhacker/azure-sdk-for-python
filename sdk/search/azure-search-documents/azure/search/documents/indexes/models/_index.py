@@ -104,6 +104,10 @@ class SearchField(_serialization.Model):
     :ivar permission_filter: A value indicating whether the field should be used as a permission
         filter. Known values are: "userIds", "groupIds", and "rbacScope".
     :vartype permission_filter: str or ~azure.search.documents.indexes.models.PermissionFilter
+    :ivar sensitivity_label: A value indicating whether the field should be used for sensitivity
+        label filtering. This enables document-level filtering based on Microsoft Purview sensitivity
+        labels.
+    :vartype sensitivity_label: bool
     :ivar analyzer_name: The name of the analyzer to use for the field. This option can be used only
         with searchable fields and it can't be set together with either searchAnalyzer or
         indexAnalyzer. Once the analyzer is chosen, it cannot be changed for the field. Must be null
@@ -207,6 +211,7 @@ class SearchField(_serialization.Model):
         sortable: Optional[bool] = None,
         facetable: Optional[bool] = None,
         permission_filter: Optional[Union[str, PermissionFilter]] = None,
+        sensitivity_label: Optional[bool] = None,
         analyzer_name: Optional[Union[str, LexicalAnalyzerName]] = None,
         search_analyzer_name: Optional[Union[str, LexicalAnalyzerName]] = None,
         index_analyzer_name: Optional[Union[str, LexicalAnalyzerName]] = None,
@@ -229,6 +234,7 @@ class SearchField(_serialization.Model):
         self.sortable = sortable
         self.facetable = facetable
         self.permission_filter = permission_filter
+        self.sensitivity_label = sensitivity_label
         self.analyzer_name = analyzer_name
         self.search_analyzer_name = search_analyzer_name
         self.index_analyzer_name = index_analyzer_name
@@ -253,6 +259,7 @@ class SearchField(_serialization.Model):
             sortable=self.sortable,
             facetable=self.facetable,
             permission_filter=self.permission_filter,
+            sensitivity_label=self.sensitivity_label,
             analyzer=self.analyzer_name,
             search_analyzer=self.search_analyzer_name,
             index_analyzer=self.index_analyzer_name,
@@ -290,6 +297,7 @@ class SearchField(_serialization.Model):
             sortable=search_field.sortable,
             facetable=search_field.facetable,
             permission_filter=search_field.permission_filter,
+            sensitivity_label=search_field.sensitivity_label,
             analyzer_name=search_field.analyzer,
             search_analyzer_name=search_field.search_analyzer,
             index_analyzer_name=search_field.index_analyzer,
@@ -667,6 +675,9 @@ class SearchIndex(_serialization.Model):
         the index. Known values are: "enabled" and "disabled".
     :vartype permission_filter_option: str or
         ~azure.search.documents.indexes.models.SearchIndexPermissionFilterOption
+    :ivar purview_enabled: A value indicating whether the index is leveraging Purview-specific
+        features. This property defaults to false and cannot be changed after index creation.
+    :vartype purview_enabled: bool
     :ivar e_tag: The ETag of the index.
     :vartype e_tag: str
     """
@@ -691,6 +702,7 @@ class SearchIndex(_serialization.Model):
         semantic_search: Optional[SemanticSearch] = None,
         vector_search: Optional[VectorSearch] = None,
         permission_filter_option: Optional[Union[str, SearchIndexPermissionFilterOption]] = None,
+        purview_enabled: Optional[bool] = None,
         e_tag: Optional[str] = None,
         **kwargs
     ):
@@ -712,6 +724,7 @@ class SearchIndex(_serialization.Model):
         self.semantic_search = semantic_search
         self.vector_search = vector_search
         self.permission_filter_option = permission_filter_option
+        self.purview_enabled = purview_enabled
         self.e_tag = e_tag
 
     def _to_generated(self) -> _SearchIndex:
@@ -750,6 +763,7 @@ class SearchIndex(_serialization.Model):
             e_tag=self.e_tag,
             vector_search=self.vector_search,
             permission_filter_option=self.permission_filter_option,
+            purview_enabled=self.purview_enabled,
         )
 
     @classmethod
@@ -800,6 +814,7 @@ class SearchIndex(_serialization.Model):
             e_tag=search_index.e_tag,
             vector_search=search_index.vector_search,
             permission_filter_option=search_index.permission_filter_option,
+            purview_enabled=search_index.purview_enabled,
         )
 
     def serialize(self, keep_readonly: bool = False, **kwargs: Any) -> MutableMapping[str, Any]:
@@ -878,7 +893,9 @@ def pack_search_field(search_field: SearchField) -> _SearchField:
         filterable = search_field.get("filterable")
         sortable = search_field.get("sortable")
         facetable = search_field.get("facetable")
+        permission_filter = search_field.get("permission_filter")
         analyzer_name = search_field.get("analyzer_name")
+        sensitivity_label = search_field.get("sensitivity_label")
         search_analyzer_name = search_field.get("search_analyzer_name")
         index_analyzer_name = search_field.get("index_analyzer_name")
         normalizer = search_field.get("normalizer")
@@ -896,6 +913,8 @@ def pack_search_field(search_field: SearchField) -> _SearchField:
             filterable=filterable,
             sortable=sortable,
             facetable=facetable,
+            permission_filter=permission_filter,
+            sensitivity_label=sensitivity_label,
             analyzer=analyzer_name,
             search_analyzer=search_analyzer_name,
             index_analyzer=index_analyzer_name,
