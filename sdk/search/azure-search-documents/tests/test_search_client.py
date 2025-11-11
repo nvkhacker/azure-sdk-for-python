@@ -9,6 +9,7 @@ from azure.core.paging import ItemPaged
 from azure.core.credentials import AzureKeyCredential
 
 from azure.search.documents._generated.models import (
+    FacetResult,
     SearchDocumentsResult,
     SearchResult,
 )
@@ -171,6 +172,28 @@ class TestSearchClient:
         )
 
     @mock.patch(
+        "azure.search.documents._generated.operations._documents_operations.DocumentsOperations.search_post"
+    )
+    def test_search_enable_elevated_read(self, mock_search_post):
+        client = SearchClient("endpoint", "index name", CREDENTIAL)
+        result = client.search(
+            search_text="search text",
+            x_ms_enable_elevated_read=True,
+            x_ms_query_source_authorization="aad:fake-user",
+        )
+        search_result = SearchDocumentsResult()
+        search_result.results = [SearchResult(additional_properties={"key": "val"})]
+        mock_search_post.return_value = search_result
+        next(result)
+
+        assert mock_search_post.called
+        assert mock_search_post.call_args[1]["x_ms_enable_elevated_read"] is True
+        assert (
+            mock_search_post.call_args[1]["x_ms_query_source_authorization"]
+            == "aad:fake-user"
+        )
+
+    @mock.patch(
         "azure.search.documents._generated.operations._documents_operations.DocumentsOperations.suggest_post"
     )
     def test_suggest_query_argument(self, mock_suggest_post):
@@ -234,6 +257,39 @@ class TestSearchClient:
         assert mock_count.call_args[0] == ()
         assert len(mock_count.call_args[1]) == 1
         assert mock_count.call_args[1]["headers"] == client._headers
+
+    @mock.patch(
+        "azure.search.documents._generated.operations._documents_operations.DocumentsOperations.search_post"
+    )
+    def test_get_facets_with_aggregations(self, mock_search_post):
+        client = SearchClient("endpoint", "index name", CREDENTIAL)
+        result = client.search(search_text="*")
+
+        search_result = SearchDocumentsResult()
+        search_result.results = [SearchResult(additional_properties={"id": "1"})]
+
+        facet_bucket = FacetResult()
+        facet_bucket.count = 4
+        facet_bucket.avg = 120.5
+        facet_bucket.min = 75.0
+        facet_bucket.max = 240.0
+        facet_bucket.cardinality = 3
+
+        search_result.facets = {"baseRate": [facet_bucket]}
+        mock_search_post.return_value = search_result
+
+        next(result)
+        facets = result.get_facets()
+
+        assert facets is not None
+        assert "baseRate" in facets
+        assert len(facets["baseRate"]) == 1
+        bucket = facets["baseRate"][0]
+        assert bucket["count"] == 4
+        assert bucket["avg"] == 120.5
+        assert bucket["min"] == 75.0
+        assert bucket["max"] == 240.0
+        assert bucket["cardinality"] == 3
 
     @mock.patch(
         "azure.search.documents._generated.operations._documents_operations.DocumentsOperations.get"
