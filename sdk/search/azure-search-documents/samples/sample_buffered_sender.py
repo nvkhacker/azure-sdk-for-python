@@ -7,16 +7,15 @@
 # --------------------------------------------------------------------------
 
 """
-FILE: sample_batch_client.py
 DESCRIPTION:
-    This sample demonstrates how to upload, merge, or delete documents using SearchIndexingBufferedSender.
+    Demonstrates buffering upload, merge, and delete operations with SearchIndexingBufferedSender.
 USAGE:
-    python sample_batch_client.py
+    python sample_buffered_sender.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_INDEX_NAME - the name of your search index (e.g. "hotels-sample-index")
-    3) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_INDEX_NAME - target search index name (e.g., "hotels-sample-index")
+    3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
 import os
@@ -31,20 +30,20 @@ from azure.search.documents import SearchIndexingBufferedSender
 
 def sample_batching_client():
     DOCUMENT = {
-        "category": "Hotel",
-        "hotelId": "1000",
-        "rating": 4.0,
-        "rooms": [],
-        "hotelName": "Azure Inn",
+        "Category": "Hotel",
+        "HotelId": "1000",
+        "Rating": 4.0,
+        "Rooms": [],
+        "HotelName": "Azure Inn",
     }
 
     with SearchIndexingBufferedSender(service_endpoint, index_name, AzureKeyCredential(key)) as batch_client:
         # add upload actions
         batch_client.upload_documents(documents=[DOCUMENT])
         # add merge actions
-        batch_client.merge_documents(documents=[{"hotelId": "1000", "rating": 4.5}])
+        batch_client.merge_documents(documents=[{"HotelId": "1000", "Rating": 4.5}])
         # add delete actions
-        batch_client.delete_documents(documents=[{"hotelId": "1000"}])
+        batch_client.delete_documents(documents=[{"HotelId": "1000"}])
 
 
 if __name__ == "__main__":

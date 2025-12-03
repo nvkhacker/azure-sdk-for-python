@@ -14,10 +14,10 @@ DESCRIPTION:
 USAGE:
     python sample_suggestions.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_INDEX_NAME - the name of your search index (e.g. "hotels-sample-index")
-    3) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_INDEX_NAME - target search index name (e.g., "hotels-sample-index")
+    3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
 import os
@@ -38,8 +38,8 @@ def suggest_query():
 
     print("Search suggestions for 'coffee'")
     for result in results:
-        hotel = search_client.get_document(key=result["hotelId"])
-        print("    Text: {} for Hotel: {}".format(repr(result["text"]), hotel["hotelName"]))
+        hotel = search_client.get_document(key=result["HotelId"])
+        print("    Text: {} for Hotel: {}".format(repr(result["text"]), hotel["HotelName"]))
     # [END suggest_query]
 
 

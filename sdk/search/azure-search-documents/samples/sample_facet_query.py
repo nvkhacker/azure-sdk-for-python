@@ -14,10 +14,10 @@ DESCRIPTION:
 USAGE:
     python sample_facet_query.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_INDEX_NAME - the name of your search index (e.g. "hotels-sample-index")
-    3) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_INDEX_NAME - target search index name (e.g., "hotels-sample-index")
+    3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
 from typing import List, Dict, cast
@@ -35,12 +35,12 @@ def filter_query():
 
     search_client = SearchClient(service_endpoint, index_name, AzureKeyCredential(key))
 
-    results = search_client.search(search_text="WiFi", facets=["category,count:3", "parkingIncluded"])
+    results = search_client.search(search_text="WiFi", facets=["category,count:3", "ParkingIncluded"])
 
     facets: Dict[str, List[str]] = cast(Dict[str, List[str]], results.get_facets())
 
     print("Catgory facet counts for hotels:")
-    for facet in facets["category"]:
+    for facet in facets["Category"]:
         print("    {}".format(facet))
     # [END facet_query]
 

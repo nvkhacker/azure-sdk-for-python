@@ -20,9 +20,9 @@ DESCRIPTION:
 USAGE:
     python sample_indexer_datasource_skillset.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_API_KEY - the primary admin key for your search service
     3) AZURE_STORAGE_CONNECTION_STRING - The connection string for the storage blob account that is
     being used to create the datasource.
 """
@@ -60,16 +60,16 @@ def _create_index():
 
     # Here we create an index with listed fields.
     fields = [
-        SimpleField(name="hotelId", type=SearchFieldDataType.String, filterable=True, sortable=True, key=True),
-        SearchableField(name="hotelName", type=SearchFieldDataType.String),
+        SimpleField(name="HotelId", type=SearchFieldDataType.String, filterable=True, sortable=True, key=True),
+        SearchableField(name="HotelName", type=SearchFieldDataType.String),
         SimpleField(name="description", type=SearchFieldDataType.String),
-        SimpleField(name="descriptionFr", type=SearchFieldDataType.String),
-        SimpleField(name="category", type=SearchFieldDataType.String),
-        SimpleField(name="parkingIncluded", type=SearchFieldDataType.Boolean, filterable=True),
-        SimpleField(name="smokingAllowed", type=SearchFieldDataType.Boolean, filterable=True),
-        SimpleField(name="lastRenovationDate", type=SearchFieldDataType.String),
-        SimpleField(name="rating", type=SearchFieldDataType.Int64, sortable=True),
-        SimpleField(name="location", type=SearchFieldDataType.GeographyPoint),
+        SimpleField(name="Description_fr", type=SearchFieldDataType.String),
+        SimpleField(name="Category", type=SearchFieldDataType.String),
+        SimpleField(name="ParkingIncluded", type=SearchFieldDataType.Boolean, filterable=True),
+        SimpleField(name="SmokingAllowed", type=SearchFieldDataType.Boolean, filterable=True),
+        SimpleField(name="LastRenovationDate", type=SearchFieldDataType.String),
+        SimpleField(name="Rating", type=SearchFieldDataType.Int64, sortable=True),
+        SimpleField(name="Location", type=SearchFieldDataType.GeographyPoint),
     ]
     cors_options = CorsOptions(allowed_origins=["*"], max_age_in_seconds=60)
 

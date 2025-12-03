@@ -13,9 +13,9 @@ DESCRIPTION:
 USAGE:
     python sample_indexer_operations.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
 import os
@@ -42,8 +42,8 @@ def create_indexer():
     # create an index
     index_name = "indexer-hotels"
     fields = [
-        SimpleField(name="hotelId", type=SearchFieldDataType.String, key=True),
-        SimpleField(name="baseRate", type=SearchFieldDataType.Double),
+        SimpleField(name="HotelId", type=SearchFieldDataType.String, key=True),
+        SimpleField(name="BaseRate", type=SearchFieldDataType.Double),
     ]
     index = SearchIndex(name=index_name, fields=fields)
     ind_client = SearchIndexClient(service_endpoint, AzureKeyCredential(key))

@@ -14,10 +14,10 @@ DESCRIPTION:
 USAGE:
     python sample_vector_search.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_INDEX_NAME - the name of your search index (e.g. "hotels-sample-index")
-    3) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_INDEX_NAME - target search index name (e.g., "hotels-sample-index")
+    3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
 import os
@@ -61,9 +61,9 @@ def get_hotel_index(name: str):
     )
 
     fields = [
-        SimpleField(name="hotelId", type=SearchFieldDataType.String, key=True),
+        SimpleField(name="HotelId", type=SearchFieldDataType.String, key=True),
         SearchableField(
-            name="hotelName",
+            name="HotelName",
             type=SearchFieldDataType.String,
             sortable=True,
             filterable=True,
@@ -77,7 +77,7 @@ def get_hotel_index(name: str):
             vector_search_profile_name="my-vector-config",
         ),
         SearchableField(
-            name="category",
+            name="Category",
             type=SearchFieldDataType.String,
             sortable=True,
             filterable=True,
@@ -94,43 +94,43 @@ def get_hotel_index(name: str):
 def get_hotel_documents():
     docs = [
         {
-            "hotelId": "1",
-            "hotelName": "Fancy Stay",
+            "HotelId": "1",
+            "HotelName": "Fancy Stay",
             "description": "Best hotel in town if you like luxury hotels.",
             "descriptionVector": get_embeddings("Best hotel in town if you like luxury hotels."),
-            "category": "Luxury",
+            "Category": "Luxury",
         },
         {
-            "hotelId": "2",
-            "hotelName": "Roach Motel",
+            "HotelId": "2",
+            "HotelName": "Roach Motel",
             "description": "Cheapest hotel in town. Infact, a motel.",
             "descriptionVector": get_embeddings("Cheapest hotel in town. Infact, a motel."),
-            "category": "Budget",
+            "Category": "Budget",
         },
         {
-            "hotelId": "3",
-            "hotelName": "EconoStay",
+            "HotelId": "3",
+            "HotelName": "EconoStay",
             "description": "Very popular hotel in town.",
             "descriptionVector": get_embeddings("Very popular hotel in town."),
-            "category": "Budget",
+            "Category": "Budget",
         },
         {
-            "hotelId": "4",
-            "hotelName": "Modern Stay",
+            "HotelId": "4",
+            "HotelName": "Modern Stay",
             "description": "Modern architecture, very polite staff and very clean. Also very affordable.",
             "descriptionVector": get_embeddings(
                 "Modern architecture, very polite staff and very clean. Also very affordable."
             ),
-            "category": "Luxury",
+            "Category": "Luxury",
         },
         {
-            "hotelId": "5",
-            "hotelName": "Secret Point",
+            "HotelId": "5",
+            "HotelName": "Secret Point",
             "description": "One of the best hotel in town. The hotel is ideally located on the main commercial artery of the city in the heart of New York.",
             "descriptionVector": get_embeddings(
                 "One of the best hotel in town. The hotel is ideally located on the main commercial artery of the city in the heart of New York."
             ),
-            "category": "Boutique",
+            "Category": "Boutique",
         },
     ]
     return docs
@@ -145,7 +145,7 @@ def single_vector_search():
 
     results = search_client.search(
         vector_queries=[vector_query],
-        select=["hotelId", "hotelName"],
+        select=["HotelId", "HotelName"],
     )
 
     for result in results:
@@ -164,7 +164,7 @@ def single_vector_search_with_filter():
         search_text="",
         vector_queries=[vector_query],
         filter="category eq 'Luxury'",
-        select=["hotelId", "hotelName"],
+        select=["HotelId", "HotelName"],
     )
 
     for result in results:
@@ -182,7 +182,7 @@ def simple_hybrid_search():
     results = search_client.search(
         search_text=query,
         vector_queries=[vector_query],
-        select=["hotelId", "hotelName"],
+        select=["HotelId", "HotelName"],
     )
 
     for result in results:

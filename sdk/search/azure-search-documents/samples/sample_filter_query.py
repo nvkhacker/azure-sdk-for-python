@@ -14,10 +14,10 @@ DESCRIPTION:
 USAGE:
     python sample_filter_query.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_INDEX_NAME - the name of your search index (e.g. "hotels-sample-index")
-    3) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_INDEX_NAME - target search index name (e.g., "hotels-sample-index")
+    3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
 import os
@@ -37,13 +37,13 @@ def filter_query():
     results = search_client.search(
         search_text="WiFi",
         filter="Address/StateProvince eq 'FL' and Address/Country eq 'USA'",
-        select=["hotelName", "rating"],
-        order_by=["rating desc"],
+        select=["HotelName", "Rating"],
+        order_by=["Rating desc"],
     )
 
     print("Florida hotels containing 'WiFi', sorted by Rating:")
     for result in results:
-        print("    Name: {} (rating {})".format(result["hotelName"], result["rating"]))
+        print("    Name: {} (rating {})".format(result["HotelName"], result["Rating"]))
     # [END filter_query]
 
 

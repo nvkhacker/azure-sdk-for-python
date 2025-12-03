@@ -14,10 +14,10 @@ DESCRIPTION:
 USAGE:
     python sample_crud_operations_async.py
 
-    Set the environment variables with your own values before running the sample:
-    1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
-    2) AZURE_SEARCH_INDEX_NAME - the name of your search index (e.g. "hotels-sample-index")
-    3) AZURE_SEARCH_API_KEY - your search API key
+    Set the following environment variables before running the sample:
+    1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+    2) AZURE_SEARCH_INDEX_NAME - target search index name (e.g., "hotels-sample-index")
+    3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
 import os
@@ -36,8 +36,8 @@ search_client = SearchClient(service_endpoint, index_name, AzureKeyCredential(ke
 async def upload_document():
     # [START upload_document_async]
     DOCUMENT = {
-        "hotelId": "1000",
-        "hotelName": "Azure Inn",
+        "HotelId": "1000",
+        "HotelName": "Azure Inn",
     }
 
     result = await search_client.upload_documents(documents=[DOCUMENT])
@@ -48,7 +48,7 @@ async def upload_document():
 
 async def merge_document():
     # [START merge_document_async]
-    result = await search_client.upload_documents(documents=[{"hotelId": "783", "hotelName": "Renovated Ranch"}])
+    result = await search_client.upload_documents(documents=[{"HotelId": "783", "HotelName": "Renovated Ranch"}])
 
     print("Merge into new document succeeded: {}".format(result[0].succeeded))
     # [END merge_document_async]
@@ -56,7 +56,7 @@ async def merge_document():
 
 async def delete_document():
     # [START delete_document_async]
-    result = await search_client.upload_documents(documents=[{"hotelId": "1000"}])
+    result = await search_client.upload_documents(documents=[{"HotelId": "1000"}])
 
     print("Delete new document succeeded: {}".format(result[0].succeeded))
     # [END delete_document_async]
