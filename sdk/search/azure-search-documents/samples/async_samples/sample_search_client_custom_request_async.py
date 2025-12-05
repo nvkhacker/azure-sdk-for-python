@@ -8,11 +8,10 @@
 
 """
 DESCRIPTION:
-    To ensure more consistent and unique search results within a user's session, you can use session id.
-    Simply include the session_id parameter in your queries to create a unique identifier for each user session.
-    This ensures a uniform experience for users throughout their "query session".
+    This sample demonstrates how to make custom HTTP requests through a client pipeline.
+
 USAGE:
-    python sample_query_session_async.py
+    python sample_search_client_custom_request_async.py
 
     Set the following environment variables before running the sample:
     1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
@@ -20,29 +19,30 @@ USAGE:
     3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
 """
 
-import os
 import asyncio
+import os
 
 service_endpoint = os.environ["AZURE_SEARCH_SERVICE_ENDPOINT"]
 index_name = os.environ["AZURE_SEARCH_INDEX_NAME"]
 key = os.environ["AZURE_SEARCH_API_KEY"]
 
 
-async def query_session():
-    # [START query_session_async]
+async def sample_send_request():
     from azure.core.credentials import AzureKeyCredential
+    from azure.core.rest import HttpRequest
     from azure.search.documents.aio import SearchClient
 
     search_client = SearchClient(service_endpoint, index_name, AzureKeyCredential(key))
 
+    # The `send_request` method can send custom HTTP requests that share the client's existing pipeline,
+    # while adding convenience for endpoint construction.
+    request = HttpRequest(method="GET", url=f"/docs/$count?api-version=2024-05-01-preview")
     async with search_client:
-        results = await search_client.search(search_text="spa", session_id="session-1")
-
-        print("Hotels containing 'spa' in the name (or other fields):")
-        async for result in results:
-            print(f"    Name: {result['HotelName']} (rating {result['Rating']})")
-    # [END query_session_async]
+        response = await search_client.send_request(request)
+    response.raise_for_status()
+    response_body = response.json()
+    print(f"Document count: {response_body}")
 
 
 if __name__ == "__main__":
-    asyncio.run(query_session())
+    asyncio.run(sample_send_request())

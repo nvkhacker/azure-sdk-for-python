@@ -7,9 +7,9 @@
 
 """
 DESCRIPTION:
-    Demonstrates how to use session IDs for consistent scoring.
+    Demonstrates how to retrieve search suggestions.
 USAGE:
-    python sample_query_session.py
+    python sample_query_suggestions.py
 
     Set the following environment variables before running the sample:
     1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
@@ -24,20 +24,21 @@ index_name = os.environ["AZURE_SEARCH_INDEX_NAME"]
 key = os.environ["AZURE_SEARCH_API_KEY"]
 
 
-def query_session():
-    # [START query_session]
+def suggest_query():
+    # [START suggest_query]
     from azure.core.credentials import AzureKeyCredential
     from azure.search.documents import SearchClient
 
     search_client = SearchClient(service_endpoint, index_name, AzureKeyCredential(key))
 
-    results = search_client.search(search_text="spa", session_id="session-1")
+    results = search_client.suggest(search_text="coffee", suggester_name="sg")
 
-    print("Hotels containing 'spa' in the name (or other fields):")
+    print("Search suggestions for 'coffee'")
     for result in results:
-        print(f"    Name: {result['HotelName']} (rating {result['Rating']})")
-    # [END query_session]
+        hotel = search_client.get_document(key=result["HotelId"])
+        print(f"    Text: {result['text']!r} for Hotel: {hotel['HotelName']}")
+    # [END suggest_query]
 
 
 if __name__ == "__main__":
-    query_session()
+    suggest_query()

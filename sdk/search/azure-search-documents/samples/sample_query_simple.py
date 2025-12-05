@@ -7,9 +7,9 @@
 
 """
 DESCRIPTION:
-    Demonstrates how to use session IDs for consistent scoring.
+    Demonstrates how to perform a simple text search.
 USAGE:
-    python sample_query_session.py
+    python sample_query_simple.py
 
     Set the following environment variables before running the sample:
     1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
@@ -24,20 +24,20 @@ index_name = os.environ["AZURE_SEARCH_INDEX_NAME"]
 key = os.environ["AZURE_SEARCH_API_KEY"]
 
 
-def query_session():
-    # [START query_session]
+def simple_text_query():
+    # [START simple_query]
     from azure.core.credentials import AzureKeyCredential
     from azure.search.documents import SearchClient
 
     search_client = SearchClient(service_endpoint, index_name, AzureKeyCredential(key))
 
-    results = search_client.search(search_text="spa", session_id="session-1")
+    results = search_client.search(search_text="spa")
 
     print("Hotels containing 'spa' in the name (or other fields):")
     for result in results:
         print(f"    Name: {result['HotelName']} (rating {result['Rating']})")
-    # [END query_session]
+    # [END simple_query]
 
 
 if __name__ == "__main__":
-    query_session()
+    simple_text_query()

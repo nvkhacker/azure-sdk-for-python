@@ -7,9 +7,10 @@
 
 """
 DESCRIPTION:
-    Demonstrates how to use session IDs for consistent scoring.
+    Demonstrates how to make custom HTTP requests using SearchClient.
+
 USAGE:
-    python sample_query_session.py
+    python sample_search_client_custom_request.py
 
     Set the following environment variables before running the sample:
     1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
@@ -24,20 +25,22 @@ index_name = os.environ["AZURE_SEARCH_INDEX_NAME"]
 key = os.environ["AZURE_SEARCH_API_KEY"]
 
 
-def query_session():
-    # [START query_session]
+def sample_send_request():
     from azure.core.credentials import AzureKeyCredential
+    from azure.core.rest import HttpRequest
     from azure.search.documents import SearchClient
+    from sample_utils import AZURE_SEARCH_API_VERSION
 
     search_client = SearchClient(service_endpoint, index_name, AzureKeyCredential(key))
 
-    results = search_client.search(search_text="spa", session_id="session-1")
-
-    print("Hotels containing 'spa' in the name (or other fields):")
-    for result in results:
-        print(f"    Name: {result['HotelName']} (rating {result['Rating']})")
-    # [END query_session]
+    # The `send_request` method can send custom HTTP requests that share the client's existing pipeline,
+    # while adding convenience for endpoint construction.
+    request = HttpRequest(method="GET", url=f"/docs/$count?api-version={AZURE_SEARCH_API_VERSION}")
+    response = search_client.send_request(request)
+    response.raise_for_status()
+    response_body = response.json()
+    print(f"Document count: {response_body}")
 
 
 if __name__ == "__main__":
-    query_session()
+    sample_send_request()

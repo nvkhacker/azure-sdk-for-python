@@ -7,17 +7,19 @@
 # --------------------------------------------------------------------------
 
 """
-FILE: sample_authentication_async.py
 DESCRIPTION:
-    This sample demonstrates how to authenticate with the Azure Congnitive Search
-    service with an API key. See more details about authentication here:
-    https://learn.microsoft.com/azure.search.documents/search-security-api-keys
+    Demonstrates how to authenticate with the Azure AI Search service using an API key and Azure Active Directory (AAD).
+    See more details about authentication here:
+    https://learn.microsoft.com/azure/search/search-security-api-keys
+
 USAGE:
     python sample_authentication_async.py
+
     Set the following environment variables before running the sample:
     1) AZURE_SEARCH_SERVICE_ENDPOINT - base URL of your Azure AI Search service
+        (e.g., https://<your-search-service-name>.search.windows.net)
     2) AZURE_SEARCH_INDEX_NAME - target search index name (e.g., "hotels-sample-index")
-    3) AZURE_SEARCH_API_KEY - the primary admin key for your search service
+    3) AZURE_SEARCH_API_KEY - the admin key for your search service
 """
 
 import asyncio
@@ -37,9 +39,9 @@ async def authentication_with_api_key_credential_async():
     # [END create_search_client_with_key_async]
 
     async with search_client:
-        result = await search_client.get_document_count()
+        document_count = await search_client.get_document_count()
 
-    print("There are {} documents in the {} search index.".format(result, index_name))
+    print(f"There are {document_count} documents in the '{index_name}' search index.")
 
 
 async def authentication_service_client_with_api_key_credential_async():
@@ -50,8 +52,13 @@ async def authentication_service_client_with_api_key_credential_async():
     service_endpoint = os.environ["AZURE_SEARCH_SERVICE_ENDPOINT"]
     key = os.environ["AZURE_SEARCH_API_KEY"]
 
-    client = SearchIndexClient(service_endpoint, AzureKeyCredential(key))
+    search_index_client = SearchIndexClient(service_endpoint, AzureKeyCredential(key))
     # [END create_search_service_with_key_async]
+
+    async with search_index_client:
+        result = await search_index_client.list_indexes()
+        names = [x.name async for x in result]
+    print(f"Found {len(names)} search indexes: {', '.join(names)}")
 
 
 async def authentication_with_aad():
@@ -67,9 +74,9 @@ async def authentication_with_aad():
     # [END authentication_with_aad]
 
     async with search_client:
-        result = await search_client.get_document_count()
+        document_count = await search_client.get_document_count()
 
-    print("There are {} documents in the {} search index.".format(result, index_name))
+    print(f"There are {document_count} documents in the '{index_name}' search index.")
 
 
 async def authentication_service_client_with_aad():
@@ -80,8 +87,13 @@ async def authentication_service_client_with_aad():
     service_endpoint = os.environ["AZURE_SEARCH_SERVICE_ENDPOINT"]
     credential = DefaultAzureCredential()
 
-    client = SearchIndexClient(service_endpoint, credential)
+    search_index_client = SearchIndexClient(service_endpoint, credential)
     # [END authentication_service_client_with_aad]
+
+    async with search_index_client:
+        result = await search_index_client.list_indexes()
+        names = [x.name async for x in result]
+    print(f"Found {len(names)} search indexes: {', '.join(names)}")
 
 
 if __name__ == "__main__":
